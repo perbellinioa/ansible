@@ -1,0 +1,36 @@
+# zookeper-role: can be used to install a ZooKeeper cluster (Multi-Server)
+# Copyright (C) 2016  Olivier Perbellini
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+---
+- name: Install zookeeper
+  apt: pkg={{item}} state=present update_cache=true
+  with_items:
+    - zookeeper
+    - zookeeperd
+
+- name: Copy myid file
+  template: src=etc/zookeeper/conf/myid.j2 dest=/etc/zookeeper/conf/myid
+  notify:
+  - zookeeper
+
+- name: Copy conf file
+  template: src=etc/zookeeper/conf/zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
+  notify:
+  - zookeeper
+
+- name: Set the Java initial and max heap size
+  copy: src=etc/zookeeper/conf/java.env dest=/etc/zookeeper/conf/java.env
+  notify:
+  - zookeeper
